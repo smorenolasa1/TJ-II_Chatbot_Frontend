@@ -1,0 +1,40 @@
+.dashboard {
+    text-align: center;
+    padding: 40px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e3c72, #2a5298); /* Gradient Background */
+    color: white;
+  }
+  
+  .dashboard-title {
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dashboard-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .page-container {
+    min-height: 100vh; /* Ensures background adapts to content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
