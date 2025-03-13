@@ -3,6 +3,8 @@
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    overflow-y: auto;  /* ✅ Ensure scrolling is enabled */
+    max-height: 100vh;  /* ✅ Prevent it from forcing full-screen lock */
   }
   
   .back-button {
@@ -31,9 +33,10 @@
     cursor: pointer;
   }
   
-  .response {
-    text-align: center;
-    margin-bottom: 20px;
+  .response h2 {
+    font-size: 19px;  /* ✅ Smaller title */
+    font-weight: bold;
+    margin-bottom: 10px;
   }
   
   .signal-list {
@@ -43,18 +46,22 @@
   
   .signal-list li {
     background-color: #f5f5f5;
-    padding: 10px;
-    margin: 5px 0;
+    padding: 8px;
+    margin: 3px 0;
     border-radius: 5px;
-  }
+    font-size: 15px;  /* ✅ Smaller text */
+    color: #4977a5;  /* ✅ Dodger Blue */
+    font-weight: bold;
+    }
   
-  .plot-container {
-    text-align: center;
-    margin-top: 20px;
+  .plot-container h2 {
+    font-size: 19px; /* ✅ Smaller title */
+    font-weight: bold;
+    margin-bottom: 10px;
   }
   
   .plot-image {
-    max-width: 80%;  /* ✅ Prevents image from taking full width */
+    max-width: 70%;  /* ✅ Prevents image from taking full width */
     height: auto;
     border: 1px solid #ddd;
     border-radius: 10px;

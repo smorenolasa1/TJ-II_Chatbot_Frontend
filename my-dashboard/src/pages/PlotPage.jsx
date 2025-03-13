@@ -16,8 +16,6 @@ const PlotPage = () => {
     setSimilarSignals([]);
     setPlotUrl(null);
 
-    console.log("Sending request with shot number:", shotNumber);
-
     try {
       const response = await fetch("http://localhost:5000/get_similar_signals", {
         method: "POST",
@@ -28,20 +26,36 @@ const PlotPage = () => {
         mode: "cors",
       });
 
-      console.log("Response status:", response.status);
-
       if (!response.ok) throw new Error("Failed to fetch data");
 
       const data = await response.json();
-      console.log("Response data:", data);
-
       setSimilarSignals(data.similar_signals);
       setPlotUrl(data.plot_url);
     } catch (error) {
-      console.error("Error fetching similar signals:", error);
       setError("Failed to fetch data. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ✅ Function to force download the image
+  const handleDownload = async () => {
+    if (!plotUrl) return;
+
+    try {
+      const response = await fetch(plotUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "similar_signals_plot.png"; // ✅ Correct filename
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading the plot:", error);
     }
   };
 
@@ -49,7 +63,7 @@ const PlotPage = () => {
     <div className="page-container">
       <button className="back-button" onClick={() => navigate("/")}>⬅ Back</button>
       
-      <h1 className="plot-title">Plot a specific signal or find the most similar signals</h1>
+      <h1 className="plot-title">Simil Pattern Tool Chatbot</h1>
 
       <div className="search-container">
         <input
@@ -84,9 +98,9 @@ const PlotPage = () => {
           <h2>Generated Plot</h2>
           <img src={plotUrl} alt="Similar Signals Plot" className="plot-image" />
           <br />
-          <a href={plotUrl} download="similar_signals_plot.png" className="download-button">
+          <button className="download-button" onClick={handleDownload}>
             ⬇ Download Plot
-          </a>
+          </button>
         </div>
       )}
     </div>
