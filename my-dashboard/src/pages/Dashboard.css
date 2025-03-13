@@ -31,6 +31,22 @@
     text-align: center;
     padding: 20px;
   }
+  .logo-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .logo {
+    width: 300px; /* Adjust size as needed */
+    height: auto;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+  
+  .logo:hover {
+    opacity: 1;
+  }
   
   @media (max-width: 768px) {
     .dashboard-grid {

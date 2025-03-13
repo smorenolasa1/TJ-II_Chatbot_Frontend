@@ -8,7 +8,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="page-container">
+    <div className="dashboard">
       <h1 className="dashboard-title">TJ-II Chatbot</h1>
       <div className="dashboard-grid">
         <Card>
@@ -20,6 +20,11 @@ const Dashboard = () => {
         <Card>
           <Button onClick={() => navigate("/plot")}>Plot Data</Button>
         </Card>
+      </div>
+
+      {/* Logo at the bottom */}
+      <div className="logo-container">
+        <img src="/ciematlogo.jpeg" alt="Ciemat Logo" className="logo" />
       </div>
     </div>
   );
