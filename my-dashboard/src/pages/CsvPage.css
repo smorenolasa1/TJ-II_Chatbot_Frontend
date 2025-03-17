@@ -6,29 +6,31 @@
     justify-content: center;
     text-align: center;
     padding: 20px;
-  }
-  
-  .csv-title {
+}
+
+/* Title Styling */
+.csv-title {
     font-size: 2rem;
     margin-bottom: 20px;
-  }
-  
-  .search-container {
+}
+
+/* Search Bar and Button */
+.search-container {
     display: flex;
     gap: 10px;
     width: 100%;
     max-width: 500px;
-  }
-  
-  .search-bar {
+}
+
+.search-bar {
     flex-grow: 1;
     padding: 12px;
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ccc;
-  }
-  
-  .search-button {
+}
+
+.search-button {
     background-color: #28a745;
     color: white;
     padding: 12px 20px;
@@ -37,30 +39,66 @@
     border-radius: 5px;
     font-size: 16px;
     transition: 0.3s;
-  }
-  
-  .search-button:hover {
+}
+
+.search-button:hover {
     background-color: #218838;
-  }
-  
-  .response {
+}
+
+/* Response Box Styling (Small, Just Below the Search Bar) */
+.response-box {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    max-width: 500px; /* Same as search bar */
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    white-space: pre-wrap; /* Preserve text formatting */
+    word-wrap: break-word;
+}
+
+/* Clarification Buttons */
+.clarification-container {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.clarification-button {
+    background-color: #ffc107;
+    color: black;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.clarification-button:hover {
+    background-color: #e0a800;
+}
+
+/* Load CSV Button */
+.load-csv-button {
     margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .load-csv-button {
-    margin-top: 40px;
     background-color: #007bff;
     color: white;
-    padding: 12px 20px;
+    padding: 10px 16px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
     transition: 0.3s;
-  }
-  
-  .load-csv-button:hover {
+}
+
+.load-csv-button:hover {
     background-color: #0056b3;
-  }
+}
