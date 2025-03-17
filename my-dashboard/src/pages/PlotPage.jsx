@@ -158,7 +158,7 @@ const PlotPage = () => {
         <div className="info-link">
           <p>info.fusion.ciemat.es:</p>
           <a
-            href={`https://info.fusion.ciemat.es/cgi-bin/TJII_data.cgi?shot=${shotNumber}&nsignal=5&signal01=Densidad2_&fact01=1.00&signal02=ABOL10&fact02=1.00&signal03=ABOL11&fact03=1.00&signal04=&fact04=1.00&signal05=&fact05=1.00&tstart=0.00&tstop=2000.00`}
+            href={`https://info.fusion.ciemat.es/cgi-bin/TJII_data.cgi`}
             target="_blank"
             rel="noopener noreferrer"
           >
