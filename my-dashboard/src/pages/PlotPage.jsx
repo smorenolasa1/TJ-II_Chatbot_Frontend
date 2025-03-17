@@ -9,61 +9,110 @@ const PlotPage = () => {
   const [plotUrl, setPlotUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedTool, setSelectedTool] = useState("SimilPatternTool");
 
+  // Function to switch tools and reset results
+  const handleToolChange = (tool) => {
+    setSelectedTool(tool);
+    setSimilarSignals([]);
+    setPlotUrl(null);
+    setError("");
+  };
+
+  // Handle fetching data from backend
   const handleSearch = async () => {
+    if (!shotNumber.trim()) {
+      setError("Please enter a valid shot number.");
+      return;
+    }
+  
     setLoading(true);
     setError("");
     setSimilarSignals([]);
     setPlotUrl(null);
-
+  
+    const apiUrl =
+      selectedTool === "SimilPatternTool"
+        ? "http://localhost:5000/get_similar_signals"
+        : "http://localhost:5001/get_tjii_plot";  // ✅ Ensure it uses the correct backend
+  
+    const requestBody =
+      selectedTool === "SimilPatternTool"
+        ? { shot_number: shotNumber }
+        : { user_query: `${shotNumber}` };
+  
+    console.log("📡 Sending Request to Backend:", apiUrl, requestBody);  // ✅ Debugging line
+  
     try {
-      const response = await fetch("http://localhost:5000/get_similar_signals", {
+      const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ shot_number: shotNumber }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
         mode: "cors",
       });
-
+  
+      console.log("📡 Backend Response:", response.status);  // ✅ Debugging line
+  
       if (!response.ok) throw new Error("Failed to fetch data");
-
-      const data = await response.json();
-      setSimilarSignals(data.similar_signals);
-      setPlotUrl(data.plot_url);
+  
+      if (selectedTool === "SimilPatternTool") {
+        const data = await response.json();
+        setSimilarSignals(data.similar_signals || []);
+        setPlotUrl(data.plot_url || null);
+      } else {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPlotUrl(url);
+      }
     } catch (error) {
       setError("Failed to fetch data. Please try again.");
+      console.error("❌ Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Function to force download the image
+  // Handle plot download
   const handleDownload = async () => {
-    if (!plotUrl) return;
+    if (!plotUrl) {
+      setError("No plot available for download.");
+      return;
+    }
 
     try {
-      const response = await fetch(plotUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
       const a = document.createElement("a");
-      a.href = url;
-      a.download = "similar_signals_plot.png"; // ✅ Correct filename
+      a.href = plotUrl;
+      a.download = `tjii_plot_${shotNumber}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading the plot:", error);
+      setError("Error downloading the plot.");
+      console.error("Download error:", error);
     }
   };
 
   return (
     <div className="page-container">
       <button className="back-button" onClick={() => navigate("/")}>⬅ Back</button>
-      
+
       <h1 className="plot-title">Simil Pattern Tool Chatbot</h1>
+
+      {/* Toggle Buttons */}
+      <div className="toggle-buttons">
+        <button
+          className={selectedTool === "SimilPatternTool" ? "active" : ""}
+          onClick={() => handleToolChange("SimilPatternTool")}
+        >
+          SimilPatternTool
+        </button>
+        <button
+          className={selectedTool === "TJ-II data display" ? "active" : ""}
+          onClick={() => handleToolChange("TJ-II data display")}
+        >
+          TJ-II data display
+        </button>
+      </div>
 
       <div className="search-container">
         <input
@@ -81,12 +130,12 @@ const PlotPage = () => {
       {error && <p className="error">{error}</p>}
 
       {/* Similar signals list */}
-      {similarSignals.length > 0 && (
+      {selectedTool === "SimilPatternTool" && similarSignals.length > 0 && (
         <div className="response">
           <h2>Similar Signals</h2>
           <ul className="signal-list">
             {similarSignals.map((sig, index) => (
-              <li key={index}>Shot {sig.shot}: Confidence {sig.confidence.toFixed(4)}</li>
+              <li key={index}>Shot {sig.shot}: Confidence {sig.confidence?.toFixed(4)}</li>
             ))}
           </ul>
         </div>
@@ -96,11 +145,25 @@ const PlotPage = () => {
       {plotUrl && (
         <div className="plot-container">
           <h2>Generated Plot</h2>
-          <img src={plotUrl} alt="Similar Signals Plot" className="plot-image" />
+          <img src={plotUrl} alt="Generated Plot" className="plot-image" />
           <br />
           <button className="download-button" onClick={handleDownload}>
             ⬇ Download Plot
           </button>
+        </div>
+      )}
+
+      {/* Display link when TJ-II data display is selected */}
+      {selectedTool === "TJ-II data display" && (
+        <div className="info-link">
+          <p>info.fusion.ciemat.es:</p>
+          <a
+            href={`https://info.fusion.ciemat.es/cgi-bin/TJII_data.cgi?shot=${shotNumber}&nsignal=5&signal01=Densidad2_&fact01=1.00&signal02=ABOL10&fact02=1.00&signal03=ABOL11&fact03=1.00&signal04=&fact04=1.00&signal05=&fact05=1.00&tstart=0.00&tstop=2000.00`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View TJ-II Data for Shot {shotNumber}
+          </a>
         </div>
       )}
     </div>
