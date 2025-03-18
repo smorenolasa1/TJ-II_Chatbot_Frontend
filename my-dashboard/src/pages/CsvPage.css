@@ -1,11 +1,28 @@
+/* Ensure response stays inside the container */
+.response {
+    margin-top: 15px;
+    padding: 12px;
+    width: 80%;
+    max-width: 600px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    overflow-y: auto;
+    max-height: 300px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Center content properly */
 .page-container {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 20px;
 }
 
 /* Title Styling */
@@ -19,7 +36,7 @@
     display: flex;
     gap: 10px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 .search-bar {
@@ -130,3 +147,4 @@
 .load-csv-button:hover {
     background-color: #0056b3;
 }
+

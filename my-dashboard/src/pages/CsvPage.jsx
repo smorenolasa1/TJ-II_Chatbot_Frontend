@@ -132,8 +132,22 @@ const CsvPage = () => {
             </button>
       )}
 
-      {response && <pre className="response">{response}</pre>}
-
+    {response && (
+    <div className="response">
+        <h2>Response</h2>
+        {Array.isArray(response) ? (
+        response.map((item, index) => (
+            <div key={index} className="response-item">
+            {Object.entries(item)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(", ")} {/* ✅ Separa valores con comas en una sola línea */}
+            </div>
+        ))
+        ) : (
+        <p>{response}</p>
+        )}
+    </div>
+    )}
       <button className="load-csv-button" onClick={() => navigate("/load-csv")}>
         Load New CSV
       </button>
