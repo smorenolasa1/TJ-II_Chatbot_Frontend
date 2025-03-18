@@ -65,6 +65,24 @@ const LoadCsvPage = () => {
     }
   };
 
+  // Handle Start Row change
+  const handleStartRowChange = (e) => {
+    let newStart = Number(e.target.value);
+    let newEnd = Math.min(newStart + MAX_ROWS, totalRows); // Ensure max range is 500 rows
+
+    setStartRow(newStart);
+    setEndRow(newEnd);
+  };
+
+  // Handle End Row change
+  const handleEndRowChange = (e) => {
+    let newEnd = Number(e.target.value);
+    let newStart = Math.max(0, newEnd - MAX_ROWS); // Ensure max range is 500 rows
+
+    setEndRow(newEnd);
+    setStartRow(newStart);
+  };
+
   // Handle question submission
   const handleAskQuestion = async () => {
     if (!question.trim()) {
@@ -148,10 +166,10 @@ const LoadCsvPage = () => {
         <div className="row-selector">
           <p>⚠️ Your dataset has {totalRows} rows. AI can only process {MAX_ROWS} rows at a time.</p>
           <label>Start Row: {startRow}</label>
-          <input type="range" min="0" max={totalRows} value={startRow} onChange={(e) => setStartRow(Number(e.target.value))} />
+          <input type="range" min="0" max={totalRows - MAX_ROWS} value={startRow} onChange={handleStartRowChange} />
           
           <label>End Row: {endRow}</label>
-          <input type="range" min="0" max={totalRows} value={endRow} onChange={(e) => setEndRow(Number(e.target.value))} />
+          <input type="range" min={MAX_ROWS} max={totalRows} value={endRow} onChange={handleEndRowChange} />
         </div>
       )}
 
