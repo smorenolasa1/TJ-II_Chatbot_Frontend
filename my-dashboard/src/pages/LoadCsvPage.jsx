@@ -164,7 +164,7 @@ const LoadCsvPage = () => {
       {/* Row Selection */}
       {totalRows > MAX_ROWS && (
         <div className="row-selector">
-          <p>⚠️ Your dataset has {totalRows} rows. AI can only process {MAX_ROWS} rows at a time.</p>
+          <p>⚠️ Your dataset has {totalRows} rows. Chatbot can only process {MAX_ROWS} rows at a time.</p>
           <label>Start Row: {startRow}</label>
           <input type="range" min="0" max={totalRows - MAX_ROWS} value={startRow} onChange={handleStartRowChange} />
           
