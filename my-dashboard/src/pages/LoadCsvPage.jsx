@@ -9,6 +9,11 @@ const LoadCsvPage = () => {
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [totalRows, setTotalRows] = useState(0);
+  const [startRow, setStartRow] = useState(0);
+  const [endRow, setEndRow] = useState(500);
+  const MAX_ROWS = 500; // AI processing limit
 
   // Handle file selection
   const handleFileChange = (event) => {
@@ -32,22 +37,29 @@ const LoadCsvPage = () => {
       return;
     }
 
+    setLoading(true);
+    setError("");
+
     const formData = new FormData();
     formData.append("file", file);
 
-    setLoading(true);
-
     try {
-      const res = await fetch("http://localhost:8501/upload", { 
+      const res = await fetch("http://localhost:8501/upload", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
-      setResponse(data.message); // Changed from response.text to message
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setResponse("✅ CSV uploaded successfully!");
+        setTotalRows(data.total_rows);
+        setStartRow(0);
+        setEndRow(Math.min(MAX_ROWS, data.total_rows)); // Ensure it doesn't exceed total rows
+      }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      setResponse("❌ Error processing the file.");
+      setError("❌ Error uploading file.");
     } finally {
       setLoading(false);
     }
@@ -61,19 +73,23 @@ const LoadCsvPage = () => {
     }
 
     setLoading(true);
+    setError("");
 
     try {
       const res = await fetch("http://localhost:8501/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, start_row: startRow, end_row: endRow }),
       });
 
       const data = await res.json();
-      setResponse(data.response);
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setResponse(data.response);
+      }
     } catch (error) {
-      console.error("Error asking question:", error);
-      setResponse("❌ Error processing the question.");
+      setError("❌ Error processing the question.");
     } finally {
       setLoading(false);
     }
@@ -88,8 +104,8 @@ const LoadCsvPage = () => {
       {/* Drag and Drop CSV */}
       <div 
         className="drop-zone" 
-        onClick={() => document.getElementById("file-input").click()} // Fix clicking issue
-        onDragOver={(e) => e.preventDefault()} 
+        onClick={() => document.getElementById("file-input").click()}
+        onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
           handleFileChange({ target: { files: e.dataTransfer.files } });
@@ -127,6 +143,18 @@ const LoadCsvPage = () => {
         {loading ? "Uploading..." : "Upload CSV"}
       </button>
 
+      {/* Row Selection */}
+      {totalRows > MAX_ROWS && (
+        <div className="row-selector">
+          <p>⚠️ Your dataset has {totalRows} rows. AI can only process {MAX_ROWS} rows at a time.</p>
+          <label>Start Row: {startRow}</label>
+          <input type="range" min="0" max={totalRows} value={startRow} onChange={(e) => setStartRow(Number(e.target.value))} />
+          
+          <label>End Row: {endRow}</label>
+          <input type="range" min="0" max={totalRows} value={endRow} onChange={(e) => setEndRow(Number(e.target.value))} />
+        </div>
+      )}
+
       {/* Question Input */}
       <div className="question-section">
         <input
@@ -140,6 +168,9 @@ const LoadCsvPage = () => {
           {loading ? "Thinking..." : "Ask"}
         </button>
       </div>
+
+      {/* Error Message */}
+      {error && <p className="error-message">{error}</p>}
 
       {/* AI Response */}
       {response && (
