@@ -6,17 +6,18 @@ const CsvPage = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
-  const [clarifications, setClarifications] = useState([]);  // NEW state for clarifications
+  const [clarifications, setClarifications] = useState({}); // Store categories and options
+  const [selectedOptions, setSelectedOptions] = useState({}); // Store user selections
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Modified handleSearch function to accept a question parameter.
   const handleSearch = async (question) => {
     if (!question.trim()) return;
     setLoading(true);
     setError("");
     setResponse("");
-    setClarifications([]); // Clear clarifications each time
+    setClarifications({});
+    setSelectedOptions({});
 
     try {
       const res = await fetch("http://localhost:5002/get_csv_answer", {
@@ -27,24 +28,27 @@ const CsvPage = () => {
 
       if (!res.ok) throw new Error("Failed to fetch response");
 
-      const data = await res.json();
-      console.log("Backend Response:", data); // Debug log
+      const data = await res.json(); // Backend response
+      console.log("Backend Response:", data); // Debugging
 
-      if (data.clarification) {  // NEW: Handle clarifications from the backend
-        setClarifications(data.clarification);
-      } else if (data.answer) {
-        if (typeof data.answer === "string") {
-          setResponse(data.answer);
-        } else if (Array.isArray(data.answer)) {
-          const formattedResponse = data.answer
-            .map((obj) =>
-              Object.entries(obj)
-                .map(([key, value]) => `${key}: ${value}`)
-                .join(", ")
-            )
-            .join("\n");
-          setResponse(formattedResponse);
-        }
+      if (data.clarification) {
+        // Convert list format ["comentario: comentarioExp, comentarioDesc"]
+        // into an object { "comentario": ["comentarioExp", "comentarioDesc"] }
+        const parsedClarifications = {};
+        data.clarification.forEach(item => {
+          const [category, options] = item.split(": ");
+          parsedClarifications[category] = options.split(", ");
+        });
+
+        setClarifications(parsedClarifications);
+      } else if (typeof data.answer === "string") {
+        setResponse(data.answer);
+      } else if (Array.isArray(data.answer)) {
+        const formattedResponse = data.answer.map(obj =>
+          Object.entries(obj).map(([key, value]) => `${key}: ${value}`).join(", ")
+        ).join("\n");
+
+        setResponse(formattedResponse);
       } else {
         setResponse("Unexpected response format.");
       }
@@ -55,12 +59,21 @@ const CsvPage = () => {
     }
   };
 
-  // NEW: Helper to handle clarification button clicks.
-  const handleClarificationClick = (option) => {
-    // Optionally, update the query input with the selected option
-    setQuery(option);
-    // Resubmit the clarified query.
-    handleSearch(option);
+  // Handle selection of options
+  const handleOptionSelection = (category, option) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [category]: option,
+    }));
+  };
+
+  // Send final selected options to the backend
+  const handleSendSelections = () => {
+    const formattedSelection = Object.entries(selectedOptions)
+      .map(([category, option]) => `${category}: ${option}`)
+      .join(", ");
+
+    handleSearch(formattedSelection);
   };
 
   return (
@@ -90,20 +103,33 @@ const CsvPage = () => {
 
       {error && <p className="error-message">{error}</p>}
 
-      {/* NEW: Render clarification buttons if clarification options exist */}
-      {clarifications.length > 0 && (
+      {/* Render clarification buttons if clarification options exist */}
+      {Object.keys(clarifications).length > 0 && (
         <div className="clarification-container">
           <p>Please clarify your question:</p>
-          {clarifications.map((option, index) => (
-            <button
-              key={index}
-              className="clarification-button"
-              onClick={() => handleClarificationClick(option)}
-            >
-              {option}
-            </button>
+          {Object.entries(clarifications).map(([category, options]) => (
+            <div key={category} className="clarification-category">
+              <p>{category}:</p>
+              {options.map((option) => (
+                <button
+                  key={option}
+                  className={`clarification-button ${selectedOptions[category] === option ? "selected" : ""}`}
+                  onClick={() => handleOptionSelection(category, option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
+      )}
+
+      {/* Show "Send Selected Options" button when all selections are made */}
+      {Object.keys(selectedOptions).length === Object.keys(clarifications).length &&
+        Object.keys(clarifications).length > 0 && (
+            <button className="send-button" onClick={handleSendSelections}>
+              Send Selected Options
+            </button>
       )}
 
       {response && <pre className="response">{response}</pre>}
