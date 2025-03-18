@@ -3,14 +3,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* Center everything vertically */
     height: 100vh;
-    background-color: #1e3a5f;
     color: white;
     font-family: 'Arial', sans-serif;
     text-align: center;
     padding: 20px;
-    overflow-y: auto; /* Enable scrolling if content gets too large */
 }
 
 /* Header */
@@ -40,10 +38,25 @@ p {
     text-decoration: underline;
 }
 
+/* Centered Content Wrapper */
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Drag & Drop Container */
 .drop-zone {
-    width: 50%;
-    min-height: 120px;
+    width: 100%;
+    max-width: 500px;
+    min-height: 100px;
     border: 2px dashed white;
     border-radius: 10px;
     display: flex;
@@ -54,6 +67,8 @@ p {
     margin-bottom: 20px;
     transition: all 0.3s ease;
     position: relative;
+    text-align: center;
+    padding: 10px;
 }
 
 .drop-zone:hover {
@@ -86,27 +101,46 @@ p {
     background-color: #ffdb4d;
 }
 
-/* CSV Preview - Scrollable */
+/* CSV Preview - Compact Box */
 .csv-preview {
-    width: 60%;
+    width: 100%;
+    max-width: 500px;
     background-color: white;
     color: black;
     padding: 10px;
     border-radius: 5px;
-    max-height: 250px;
+    max-height: 200px;
     overflow-y: auto;
+    overflow-x: auto;
     margin-bottom: 20px;
     text-align: left;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Responsive Table */
 .csv-preview table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .csv-preview th, .csv-preview td {
-    padding: 8px;
+    padding: 5px;
     border-bottom: 1px solid #ddd;
+    text-align: left;
+    font-size: 0.9rem;
+    white-space: nowrap; /* Prevents text from breaking */
+}
+
+/* Make the table scroll smoothly */
+.csv-preview::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+}
+
+.csv-preview::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
 }
 
 /* Keep Ask Section Always Visible */
@@ -115,8 +149,9 @@ p {
     gap: 10px;
     align-items: center;
     justify-content: center;
-    width: 50%;
-    margin-top: 20px; /* Ensure space below preview */
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
 }
 
 /* Input Box */
@@ -126,6 +161,7 @@ p {
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 5px;
+    width: 100%;
 }
 
 /* Ask Button */
@@ -146,16 +182,48 @@ p {
 
 /* AI Response Box */
 .response-container {
-    width: 50%;
+    width: 100%;
+    max-width: 500px;
     background-color: white;
     color: black;
     padding: 20px;
     border-radius: 5px;
-    max-height: 300px;
+    max-height: 250px;
     overflow-y: auto;
     text-align: left;
+    margin-top: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .response-container h2 {
     color: #1e3a5f;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    p {
+        font-size: 1rem;
+    }
+
+    .drop-zone, .csv-preview, .question-section, .response-container {
+        width: 95%;
+    }
+
+    .csv-preview {
+        max-height: 150px;
+    }
+
+    .question-input {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .ask-button, .upload-button {
+        font-size: 1rem;
+        padding: 8px 12px;
+    }
 }

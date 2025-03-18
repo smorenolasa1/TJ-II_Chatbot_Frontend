@@ -44,7 +44,7 @@ const LoadCsvPage = () => {
       });
 
       const data = await res.json();
-      setResponse(data.response);
+      setResponse(data.message); // Changed from response.text to message
     } catch (error) {
       console.error("Error uploading file:", error);
       setResponse("❌ Error processing the file.");
@@ -88,13 +88,19 @@ const LoadCsvPage = () => {
       {/* Drag and Drop CSV */}
       <div 
         className="drop-zone" 
+        onClick={() => document.getElementById("file-input").click()} // Fix clicking issue
         onDragOver={(e) => e.preventDefault()} 
         onDrop={(e) => {
           e.preventDefault();
           handleFileChange({ target: { files: e.dataTransfer.files } });
         }}
       >
-        <input type="file" className="file-input" onChange={handleFileChange} />
+        <input 
+          id="file-input"
+          type="file"
+          className="file-input"
+          onChange={handleFileChange} 
+        />
         <p>Drag & Drop or Click to Upload</p>
       </div>
 
