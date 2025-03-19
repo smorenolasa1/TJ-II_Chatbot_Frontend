@@ -144,7 +144,7 @@ const CsvPage = () => {
             </div>
         ))
         ) : (
-        <div className="response-container" dangerouslySetInnerHTML={{ __html: response.replace(/\n/g, "<br>") }}></div>
+        <p dangerouslySetInnerHTML={{ __html: response.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") }}></p>
         )}
     </div>
     )}
