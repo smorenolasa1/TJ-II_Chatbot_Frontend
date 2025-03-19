@@ -15,22 +15,32 @@ const LoadCsvPage = () => {
   const [endRow, setEndRow] = useState(500);
   const MAX_ROWS = 500; // AI processing limit
 
-  // Handle file selection
+  const [csvUploaded, setCsvUploaded] = useState(false);
+
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
 
-    // Read CSV for preview
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target.result;
-      const rows = text.split("\n").slice(0, 6).map(row => row.split(",")); // Show first 5 rows
+      const rows = text.split("\n").slice(0, 6).map(row => row.split(","));
       setPreviewData(rows);
     };
     reader.readAsText(selectedFile);
   };
 
-  // Handle file upload
+  const handleRemoveFile = () => {
+    setFile(null);
+    setPreviewData([]);
+    setResponse("");
+    setError("");
+    setTotalRows(0);
+    setStartRow(0);
+    setEndRow(500);
+    setCsvUploaded(false);
+  };
+
   const handleUpload = async () => {
     if (!file) {
       alert("Please select a file first.");
@@ -53,10 +63,11 @@ const LoadCsvPage = () => {
       if (data.error) {
         setError(data.error);
       } else {
-        setResponse("✅ CSV uploaded successfully!");
+        setResponse("CSV uploaded successfully!");
         setTotalRows(data.total_rows);
         setStartRow(0);
-        setEndRow(Math.min(MAX_ROWS, data.total_rows)); // Ensure it doesn't exceed total rows
+        setEndRow(Math.min(MAX_ROWS, data.total_rows));
+        setCsvUploaded(true);
       }
     } catch (error) {
       setError("❌ Error uploading file.");
@@ -65,25 +76,22 @@ const LoadCsvPage = () => {
     }
   };
 
-  // Handle Start Row change
   const handleStartRowChange = (e) => {
     let newStart = Number(e.target.value);
-    let newEnd = Math.min(newStart + MAX_ROWS, totalRows); // Ensure max range is 500 rows
+    let newEnd = Math.min(newStart + MAX_ROWS, totalRows);
 
     setStartRow(newStart);
     setEndRow(newEnd);
   };
 
-  // Handle End Row change
   const handleEndRowChange = (e) => {
     let newEnd = Number(e.target.value);
-    let newStart = Math.max(0, newEnd - MAX_ROWS); // Ensure max range is 500 rows
+    let newStart = Math.max(0, newEnd - MAX_ROWS);
 
     setEndRow(newEnd);
     setStartRow(newStart);
   };
 
-  // Handle question submission
   const handleAskQuestion = async () => {
     if (!question.trim()) {
       alert("Please enter a question.");
@@ -117,80 +125,86 @@ const LoadCsvPage = () => {
     <div className="page-container">
       <button className="back-button" onClick={() => navigate("/csv")}>⬅ Back</button>
       <h1>Upload and Analyze a CSV</h1>
-      <p>Drop a CSV file below or click to upload.</p>
-
-      {/* Drag and Drop CSV */}
-      <div 
-        className="drop-zone" 
-        onClick={() => document.getElementById("file-input").click()}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          handleFileChange({ target: { files: e.dataTransfer.files } });
-        }}
-      >
-        <input 
-          id="file-input"
-          type="file"
-          className="file-input"
-          onChange={handleFileChange} 
-        />
-        <p>Drag & Drop or Click to Upload</p>
-      </div>
-
-      {/* Show Preview if CSV is uploaded */}
-      {previewData.length > 0 && (
-        <div className="csv-preview">
-          <h2>CSV Preview:</h2>
-          <table>
-            <tbody>
-              {previewData.map((row, index) => (
-                <tr key={index}>
-                  {row.map((cell, cellIndex) => (
-                    <td key={cellIndex}>{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  
+      {!csvUploaded ? (
+        !file ? (
+          <>
+            <p>Drop a CSV file below or click to upload.</p>
+            <div 
+              className="drop-zone" 
+              onClick={() => document.getElementById("file-input").click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleFileChange({ target: { files: e.dataTransfer.files } });
+              }}
+            >
+              <input 
+                id="file-input"
+                type="file"
+                className="file-input"
+                onChange={handleFileChange} 
+              />
+              <p>Drag & Drop or Click to Upload</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="csv-preview-container">
+              <div className="csv-preview">
+                <h2>CSV Preview:</h2>
+                <table>
+                  <tbody>
+                    {previewData.map((row, index) => (
+                      <tr key={index}>
+                        {row.map((cell, cellIndex) => (
+                          <td key={cellIndex}>{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <button className="remove-file-button" onClick={handleRemoveFile}>❌</button>
+            </div>
+  
+            <button className="upload-button" onClick={handleUpload} disabled={loading}>
+              {loading ? "Uploading..." : "Upload CSV"}
+            </button>
+          </>
+        )
+      ) : (
+        <>
+          {totalRows > MAX_ROWS && (
+            <div className="row-selector">
+              <p>⚠️ Your dataset has {totalRows} rows. Chatbot can only process {MAX_ROWS} rows at a time.</p>
+              <label>Start Row: {startRow}</label>
+              <input type="range" min="0" max={totalRows - MAX_ROWS} value={startRow} onChange={handleStartRowChange} />
+              
+              <label>End Row: {endRow}</label>
+              <input type="range" min={MAX_ROWS} max={totalRows} value={endRow} onChange={handleEndRowChange} />
+            </div>
+          )}
+  
+          <div className="question-section">
+            <input
+              type="text"
+              className="question-input"
+              placeholder="Ask something about the dataset..."
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+            />
+            <button className="ask-button" onClick={handleAskQuestion} disabled={loading}>
+              {loading ? "Thinking..." : "Ask"}
+            </button>
+          </div>
+  
+          <button className="reupload-button" onClick={handleRemoveFile}>Upload New CSV</button>
+        </>
       )}
-
-      {/* Upload Button */}
-      <button className="upload-button" onClick={handleUpload} disabled={loading}>
-        {loading ? "Uploading..." : "Upload CSV"}
-      </button>
-
-      {/* Row Selection */}
-      {totalRows > MAX_ROWS && (
-        <div className="row-selector">
-          <p>⚠️ Your dataset has {totalRows} rows. Chatbot can only process {MAX_ROWS} rows at a time.</p>
-          <label>Start Row: {startRow}</label>
-          <input type="range" min="0" max={totalRows - MAX_ROWS} value={startRow} onChange={handleStartRowChange} />
-          
-          <label>End Row: {endRow}</label>
-          <input type="range" min={MAX_ROWS} max={totalRows} value={endRow} onChange={handleEndRowChange} />
-        </div>
-      )}
-
-      {/* Question Input */}
-      <div className="question-section">
-        <input
-          type="text"
-          className="question-input"
-          placeholder="Ask something about the dataset..."
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-        />
-        <button className="ask-button" onClick={handleAskQuestion} disabled={loading}>
-          {loading ? "Thinking..." : "Ask"}
-        </button>
-      </div>
-
-      {/* Error Message */}
+  
       {error && <p className="error-message">{error}</p>}
-
-      {/* AI Response */}
+  
       {response && (
         <div className="response-container">
           <h2>AI Response:</h2>

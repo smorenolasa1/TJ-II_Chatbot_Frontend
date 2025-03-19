@@ -54,19 +54,18 @@ p {
 
 /* Drag & Drop Container */
 .drop-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     max-width: 500px;
     min-height: 100px;
     border: 2px dashed white;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 1rem;
     cursor: pointer;
     margin-bottom: 20px;
     transition: all 0.3s ease;
-    position: relative;
     text-align: center;
     padding: 10px;
 }
@@ -104,15 +103,14 @@ p {
 /* CSV Preview - Compact Box */
 .csv-preview {
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;
     background-color: white;
     color: black;
     padding: 10px;
     border-radius: 5px;
     max-height: 200px;
     overflow-y: auto;
-    overflow-x: auto;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: left;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -122,6 +120,23 @@ p {
     width: 100%;
     border-collapse: collapse;
     table-layout: auto;
+}
+
+/* Remove File Button */
+.remove-file-button {
+    margin-left: 10px;
+    background-color: #d9534f;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.remove-file-button:hover {
+    background-color: #c9302c;
 }
 
 .csv-preview th, .csv-preview td {
@@ -166,6 +181,7 @@ p {
 
 /* Ask Button */
 .ask-button {
+    display: block;
     background-color: #ffcc00;
     color: #1e3a5f;
     font-size: 1rem;
@@ -174,6 +190,23 @@ p {
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+/* Re-upload Button */
+.reupload-button {
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reupload-button:hover {
+    background-color: #0056b3;
 }
 
 .ask-button:hover {
@@ -213,8 +246,26 @@ p {
         width: 95%;
     }
 
+    .csv-preview-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 500px;
+        margin-bottom: 20px;
+    }
+    
+    /* CSV Preview */
     .csv-preview {
-        max-height: 150px;
+        flex-grow: 1;
+        background-color: white;
+        color: black;
+        padding: 10px;
+        border-radius: 5px;
+        max-height: 200px;
+        overflow-y: auto;
+        text-align: left;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .question-input {
