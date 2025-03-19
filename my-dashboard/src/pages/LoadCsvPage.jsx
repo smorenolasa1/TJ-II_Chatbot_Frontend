@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoadCsvPage.css";
+import ReactMarkdown from "react-markdown";
 
 const LoadCsvPage = () => {
   const navigate = useNavigate();
@@ -208,7 +209,7 @@ const LoadCsvPage = () => {
       {response && (
         <div className="response-container">
           <h2>AI Response:</h2>
-          <p>{response}</p>
+          <div className="response-container" dangerouslySetInnerHTML={{ __html: response.replace(/\n/g, "<br>") }}></div>
         </div>
       )}
     </div>
