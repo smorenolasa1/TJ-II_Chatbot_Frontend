@@ -11,7 +11,10 @@ const PlotPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedTool, setSelectedTool] = useState("SimilPatternTool");
-
+  const [history, setHistory] = useState(() => {
+    const savedHistory = sessionStorage.getItem("chatHistoryPlot");
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
   // Function to switch tools and reset results
   const handleToolChange = (tool) => {
     setSelectedTool(tool);
@@ -33,6 +36,46 @@ const PlotPage = () => {
     setSimilarSignals([]);
     setAiResponse("");
     setPlotUrl(null);
+  
+    let apiUrl;
+    let requestBody;
+  
+    if (selectedTool === "TJ-II data display") {
+      apiUrl = "http://localhost:5001/get_tjii_plot";
+      requestBody = { user_query: userInput };
+  
+      console.log("📡 Sending Request to TJ-II Backend:", apiUrl, requestBody);
+  
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+          mode: "cors",
+        });
+  
+        if (!response.ok) throw new Error("Failed to fetch data");
+  
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPlotUrl(url);
+  
+        // ✅ Save in chat history
+        setHistory(prevHistory => {
+          const updatedHistory = [...prevHistory, { question: userInput, plot: url }];
+          sessionStorage.setItem("chatHistoryPlot", JSON.stringify(updatedHistory));
+          return updatedHistory;
+        });
+  
+      } catch (error) {
+        setError("Failed to fetch TJ-II data. Please try again.");
+        console.error("❌ Error:", error);
+      } finally {
+        setLoading(false);
+      }
+  
+      return; 
+    }
   
     const apiUrlExtract = "http://localhost:5000/extract_shot_number";
     const requestBodyExtract = { user_query: userInput };
@@ -60,17 +103,10 @@ const PlotPage = () => {
   
       console.log(`📡 Extracted shot number: ${extractedShotNumber}`);
   
-      const apiUrl =
-        selectedTool === "SimilPatternTool"
-          ? "http://localhost:5000/ask_gemini"
-          : "http://localhost:5001/get_tjii_plot";
+      apiUrl = "http://localhost:5000/ask_gemini";
+      requestBody = { shot_number: extractedShotNumber, question: userInput };
   
-      const requestBody =
-        selectedTool === "SimilPatternTool"
-          ? { shot_number: extractedShotNumber, question: userInput }
-          : { user_query: userInput };
-  
-      console.log("📡 Sending Request to Backend:", apiUrl, requestBody);
+      console.log("📡 Sending Request to SimilPatternTool Backend:", apiUrl, requestBody);
   
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -81,17 +117,19 @@ const PlotPage = () => {
   
       if (!response.ok) throw new Error("Failed to fetch data");
   
-      if (selectedTool === "SimilPatternTool") {
-        const data = await response.json();
-        setAiResponse(data.response || "No response from AI.");
-        setPlotUrl(data.plot_url || null);
-      } else {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setPlotUrl(url);
-      }
+      const data = await response.json();
+      setAiResponse(data.response || "No response from AI.");
+      setPlotUrl(data.plot_url || null);
+  
+      // ✅ Save AI response in chat history
+      setHistory(prevHistory => {
+        const updatedHistory = [...prevHistory, { question: userInput, answer: data.response, plot: data.plot_url }];
+        sessionStorage.setItem("chatHistoryPlot", JSON.stringify(updatedHistory));
+        return updatedHistory;
+      });
+  
     } catch (error) {
-      setError("Failed to fetch data. Please try again.");
+      setError("Failed to fetch SimilPatternTool data. Please try again.");
       console.error("❌ Error:", error);
     } finally {
       setLoading(false);
@@ -156,32 +194,34 @@ const PlotPage = () => {
 
       {error && <p className="error">{error}</p>}
 
-      {/* AI Response for SimilPatternTool */}
-      {selectedTool === "SimilPatternTool" && aiResponse && (
-        <div className="response">
-          <h2>AI Response</h2>
-          <p>{aiResponse}</p>
-        </div>
-      )}
-
-      {/* Similar Signals List for SimilPatternTool */}
-      {selectedTool === "SimilPatternTool" && similarSignals.length > 0 && (
-        <div className="response">
-          <h2>Similar Signals</h2>
-          <ul className="signal-list">
-            {similarSignals.map((sig, index) => (
-              <li key={index}>Shot {sig.shot}: Confidence {sig.confidence?.toFixed(4)}</li>
-            ))}
-          </ul>
+      {/* Display chat history */}
+      {history.length > 0 && (
+        <div className="chat-box">
+          {history.map((entry, index) => (
+            <div key={index} className="chat-message-container">
+              <div className="chat-message user-message">
+                <strong>You:</strong> {entry.question}
+              </div>
+              {entry.answer && (
+                <div className="chat-message bot-message">
+                  <strong>Bot:</strong>
+                  <p>{entry.answer}</p>
+                </div>
+              )}
+              {entry.plot && (
+                <div className="plot-container">
+                  <h2>Generated Plot</h2>
+                  <img src={entry.plot} alt="Generated Plot" className="plot-image" />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
       {/* Plot + Download Button */}
       {plotUrl && (
         <div className="plot-container">
-          <h2>Generated Plot</h2>
-          <img src={plotUrl} alt="Generated Plot" className="plot-image" />
-          <br />
           <button className="download-button" onClick={handleDownload}>
             ⬇ Download Plot
           </button>

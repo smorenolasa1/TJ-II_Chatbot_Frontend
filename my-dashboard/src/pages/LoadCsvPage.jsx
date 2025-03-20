@@ -217,6 +217,7 @@ const LoadCsvPage = () => {
       {error && <p className="error-message">{error}</p>}
   
       {/* Display chat history */}
+      {/* Display chat history */}
       {history.length > 0 && (
         <div className="chat-box">
           {history.map((entry, index) => (
@@ -233,6 +234,16 @@ const LoadCsvPage = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* ✅ Reset Chat History Button (at the end) */}
+      {history.length > 0 && (
+        <button className="clear-history-button" onClick={() => {
+          setHistory([]);
+          sessionStorage.removeItem("chatHistoryCsv");
+        }}>
+          Reset Chat History
+        </button>
       )}
     </div>
   );
