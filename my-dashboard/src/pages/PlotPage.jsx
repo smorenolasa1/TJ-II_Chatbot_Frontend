@@ -144,12 +144,18 @@ const PlotPage = () => {
     }
   
     try {
-      const a = document.createElement("a");
-      a.href = plotUrl;
-      a.download = `generated_plot.png`;  // ✅ Make sure it has a valid filename
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      fetch(plotUrl)
+        .then(response => response.blob())
+        .then(blob => {
+          const a = document.createElement("a");
+          const url = URL.createObjectURL(blob);
+          a.href = url;
+          a.download = "generated_plot.png";  // ✅ Set correct filename
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);  // ✅ Free memory after download
+        });
     } catch (error) {
       setError("Error downloading the plot.");
       console.error("Download error:", error);
