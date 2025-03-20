@@ -14,7 +14,10 @@ const LoadCsvPage = () => {
   const [startRow, setStartRow] = useState(0);
   const [endRow, setEndRow] = useState(500);
   const MAX_ROWS = 500; // AI processing limit
-
+  const [history, setHistory] = useState(() => {
+    const savedHistory = sessionStorage.getItem("chatHistoryCsv");
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
   const [csvUploaded, setCsvUploaded] = useState(false);
 
   const handleFileChange = (event) => {
@@ -97,22 +100,30 @@ const LoadCsvPage = () => {
       alert("Please enter a question.");
       return;
     }
-
+  
     setLoading(true);
     setError("");
-
+  
     try {
       const res = await fetch("http://localhost:8501/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, start_row: startRow, end_row: endRow }),
       });
-
+  
       const data = await res.json();
       if (data.error) {
         setError(data.error);
       } else {
-        setResponse(data.response);
+        const botResponse = data.response;
+        setResponse(botResponse);
+  
+        // ✅ Save question and response in history
+        setHistory(prevHistory => {
+          const updatedHistory = [...prevHistory, { question, answer: botResponse }];
+          sessionStorage.setItem("chatHistoryCsv", JSON.stringify(updatedHistory));
+          return updatedHistory;
+        });
       }
     } catch (error) {
       setError("❌ Error processing the question.");
@@ -124,7 +135,7 @@ const LoadCsvPage = () => {
   return (
     <div className="page-container">
       <button className="back-button" onClick={() => navigate("/csv")}>⬅ Back</button>
-      <h1>Upload and Analyze a CSV</h1>
+      <h1>Ask about your CSV</h1>
   
       {!csvUploaded ? (
         !file ? (
@@ -177,7 +188,7 @@ const LoadCsvPage = () => {
         <>
           {totalRows > MAX_ROWS && (
             <div className="row-selector">
-              <p>⚠️ Your dataset has {totalRows} rows. Chatbot can only process {MAX_ROWS} rows at a time.</p>
+              <p>Dataset has {totalRows} rows. Chatbot can only process 500 rows at a time.</p>
               <label>Start Row: {startRow}</label>
               <input type="range" min="0" max={totalRows - MAX_ROWS} value={startRow} onChange={handleStartRowChange} />
               
@@ -205,12 +216,24 @@ const LoadCsvPage = () => {
   
       {error && <p className="error-message">{error}</p>}
   
-      {response && (
-        <div className="response-container">
-            <h2>AI Response:</h2>
-            <p dangerouslySetInnerHTML={{ __html: response.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") }}></p>
+      {/* Display chat history */}
+      {history.length > 0 && (
+        <div className="chat-box">
+          {history.map((entry, index) => (
+            <div key={index} className="chat-message-container">
+              <div className="chat-message user-message">
+                <strong>You:</strong> {entry.question}
+              </div>
+              <div className="chat-message bot-message">
+                <strong>Bot:</strong> 
+                <p dangerouslySetInnerHTML={{ 
+                  __html: entry.answer.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") 
+                }}></p>
+              </div>
+            </div>
+          ))}
         </div>
-        )}
+      )}
     </div>
   );
 };
