@@ -135,42 +135,43 @@ text-align: left; /* Alinea la lista a la izquierda */
 margin-bottom: 5px;
 }
 
-/* Caja de chat que incluye historial y respuesta */
 .chat-box {
-    margin-top: 15px;
-    padding: 12px;
-    width: 80%;
-    max-width: 600px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
-    color: #333;
-    text-align: left;
-    overflow-y: auto;
-    max-height: 300px;
-    word-wrap: break-word;
-    white-space: pre-wrap;
     display: flex;
-    flex-direction: column-reverse; /* Última pregunta abajo, como en ChatGPT */
-}
-
-/* Mensajes dentro del chat */
-.chat-message {
-    padding: 8px;
-    border-radius: 5px;
-    margin-bottom: 5px;
-}
-
-/* Estilo de mensaje del usuario */
-.user-message {
-    background-color: #d1e7dd;
-    align-self: flex-start;
-}
-
-/* Estilo de respuesta del bot */
-.bot-message {
-    background-color: #e9ecef;
+    flex-direction: column;
+    gap: 15px; /* Espaciado entre cada par de mensajes */
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    overflow-y: auto;
+  }
+  
+  .chat-message-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espaciado entre pregunta y respuesta */
+    margin-bottom: 1px; /* Separación entre cada bloque de conversación */
+  }
+  
+  .chat-message {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    word-wrap: break-word;
+  }
+  
+  .user-message {
     align-self: flex-end;
-}
+    background-color: #4caf50;
+    color: white;
+    text-align: right;
+  }
+  
+  .bot-message {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: black;
+    text-align: left;
+    border: 1px solid #ccc;
+  }

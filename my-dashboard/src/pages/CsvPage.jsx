@@ -15,11 +15,9 @@ const CsvPage = () => {
   const handleSearch = async (question) => {
     if (!question.trim()) return;
   
-    setHistory(prevHistory => [...prevHistory, question]); // Save history
-  
     setLoading(true);
     setError("");
-    setResponse("");
+    setResponse(""); // Limpiar la respuesta actual antes de hacer la consulta
     setClarifications({});
     setSelectedOptions({});
   
@@ -27,13 +25,15 @@ const CsvPage = () => {
       const res = await fetch("http://localhost:5002/get_csv_answer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: question, parameters: {} }), // ✅ Fix: Ensure correct payload format
+        body: JSON.stringify({ question: question, parameters: {} }),
       });
   
       if (!res.ok) throw new Error("Failed to fetch response");
   
       const data = await res.json();
       console.log("Backend Response:", data);
+  
+      let botResponse = "";
   
       if (data.clarification) {
         const parsedClarifications = {};
@@ -44,16 +44,19 @@ const CsvPage = () => {
   
         setClarifications(parsedClarifications);
       } else if (typeof data.answer === "string") {
-        setResponse(data.answer);
+        botResponse = data.answer;
+        setResponse(botResponse);
       } else if (Array.isArray(data.answer)) {
-        const formattedResponse = data.answer.map(obj =>
+        botResponse = data.answer.map(obj =>
           Object.entries(obj).map(([key, value]) => `${key}: ${value}`).join(", ")
         ).join("\n");
-  
-        setResponse(formattedResponse);
+        setResponse(botResponse);
       } else {
-        setResponse("Unexpected response format.");
+        botResponse = "Unexpected response format.";
+        setResponse(botResponse);
       }
+      setHistory(prevHistory => [...prevHistory, { question, answer: botResponse }]);
+  
     } catch (err) {
       setError("Error fetching response. Please try again.");
     } finally {
@@ -105,24 +108,23 @@ const CsvPage = () => {
 
       {error && <p className="error-message">{error}</p>}
       {/* Sección única de chat con historial y respuesta */}
-      {(history.length > 0 || response) && (
-        <div className="chat-box">
-          {history.map((q, index) => (
-            <div key={index} className="chat-message user-message">
-              <strong>You:</strong> {q}
+      {history.length > 0 && (
+      <div className="chat-box">
+        {history.map((entry, index) => (
+          <div key={index} className="chat-message-container">
+            <div className="chat-message user-message">
+              <strong>You:</strong> {entry.question}
             </div>
-          ))}
-          
-          {response && (
             <div className="chat-message bot-message">
               <strong>Bot:</strong> 
               <p dangerouslySetInnerHTML={{ 
-                __html: response.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") 
+                __html: entry.answer.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") 
               }}></p>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
+    )}
       {/* Render clarification buttons if clarification options exist */}
       {Object.keys(clarifications).length > 0 && (
         <div className="clarification-container">
