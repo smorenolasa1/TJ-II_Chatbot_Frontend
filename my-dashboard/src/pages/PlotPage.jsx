@@ -214,7 +214,11 @@ const PlotPage = () => {
               {entry.answer && (
                 <div className="chat-message bot-message">
                   <strong>Bot:</strong>
-                  <p>{entry.answer}</p>
+                  <p dangerouslySetInnerHTML={{ 
+                    __html: entry.answer
+                      .replace(/\n/g, "<br>")   // ✅ Preserve line breaks
+                      .replace(/\* (.+?)/g, "• $1")  // ✅ Convert * to bullet points
+                  }}></p>
                 </div>
               )}
 
