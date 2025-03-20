@@ -137,16 +137,16 @@ const PlotPage = () => {
   };
 
   // Handle plot download
-  const handleDownload = async () => {
+  const handleDownload = (plotUrl) => {
     if (!plotUrl) {
       setError("No plot available for download.");
       return;
     }
-
+  
     try {
       const a = document.createElement("a");
       a.href = plotUrl;
-      a.download = `shot_plot.png`;
+      a.download = `generated_plot.png`;  // ✅ Make sure it has a valid filename
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -199,17 +199,22 @@ const PlotPage = () => {
         <div className="chat-box">
           {history.map((entry, index) => (
             <div key={index} className="chat-message-container">
+              {/* User Question (Right Side) */}
               <div className="chat-message user-message">
                 <strong>You:</strong> {entry.question}
               </div>
+
+              {/* Bot Response (Left Side) */}
               {entry.answer && (
                 <div className="chat-message bot-message">
                   <strong>Bot:</strong>
                   <p>{entry.answer}</p>
                 </div>
               )}
+
+              {/* ✅ Separate Box for Generated Plot (Left Side) */}
               {entry.plot && (
-                <div className="plot-container">
+                <div className="chat-message bot-message">
                   <h2>Generated Plot</h2>
                   <img src={entry.plot} alt="Generated Plot" className="plot-image" />
                 </div>
@@ -219,10 +224,9 @@ const PlotPage = () => {
         </div>
       )}
 
-      {/* Plot + Download Button */}
       {plotUrl && (
-        <div className="plot-container">
-          <button className="download-button" onClick={handleDownload}>
+        <div className="download-container">
+          <button className="download-button" onClick={() => handleDownload(plotUrl)}>
             ⬇ Download Plot
           </button>
         </div>
