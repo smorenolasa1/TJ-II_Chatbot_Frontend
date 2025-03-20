@@ -1,21 +1,3 @@
-/* Ensure response stays inside the container */
-.response {
-    margin-top: 15px;
-    padding: 12px;
-    width: 80%;
-    max-width: 600px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
-    color: #333;
-    text-align: left;
-    overflow-y: auto;
-    max-height: 300px;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-}
 
 /* Center content properly */
 .page-container {
@@ -60,23 +42,6 @@
 
 .search-button:hover {
     background-color: #218838;
-}
-
-/* Response Box Styling (Small, Just Below the Search Bar) */
-.response-box {
-    margin-top: 15px;
-    padding: 10px;
-    width: 100%;
-    max-width: 500px; /* Same as search bar */
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
-    color: #333;
-    text-align: left;
-    white-space: pre-wrap; /* Preserve text formatting */
-    word-wrap: break-word;
 }
 
 /* Clarification Buttons */
@@ -148,3 +113,64 @@
     background-color: #0056b3;
 }
 
+.example-prompts {
+margin-top: 20px;
+padding: 10px;
+border-radius: 5px;
+width: fit-content; /* Ajusta el ancho según el contenido */
+}
+
+.example-prompts h3 {
+margin-bottom: 8px;
+text-align: left; /* Alinea el título a la izquierda */
+}
+
+.example-prompts ul {
+list-style-type: none;
+padding: 0;
+text-align: left; /* Alinea la lista a la izquierda */
+}
+
+.example-prompts li {
+margin-bottom: 5px;
+}
+
+/* Caja de chat que incluye historial y respuesta */
+.chat-box {
+    margin-top: 15px;
+    padding: 12px;
+    width: 80%;
+    max-width: 600px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    overflow-y: auto;
+    max-height: 300px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    display: flex;
+    flex-direction: column-reverse; /* Última pregunta abajo, como en ChatGPT */
+}
+
+/* Mensajes dentro del chat */
+.chat-message {
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+/* Estilo de mensaje del usuario */
+.user-message {
+    background-color: #d1e7dd;
+    align-self: flex-start;
+}
+
+/* Estilo de respuesta del bot */
+.bot-message {
+    background-color: #e9ecef;
+    align-self: flex-end;
+}

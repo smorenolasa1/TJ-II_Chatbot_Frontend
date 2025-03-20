@@ -10,36 +10,38 @@ const CsvPage = () => {
   const [selectedOptions, setSelectedOptions] = useState({}); // Store user selections
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [history, setHistory] = useState([]); // Guarda el historial de preguntas
 
   const handleSearch = async (question) => {
     if (!question.trim()) return;
+  
+    setHistory(prevHistory => [...prevHistory, question]); // Save history
+  
     setLoading(true);
     setError("");
     setResponse("");
     setClarifications({});
     setSelectedOptions({});
-
+  
     try {
       const res = await fetch("http://localhost:5002/get_csv_answer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question: question, parameters: {} }), // ✅ Fix: Ensure correct payload format
       });
-
+  
       if (!res.ok) throw new Error("Failed to fetch response");
-
-      const data = await res.json(); // Backend response
-      console.log("Backend Response:", data); // Debugging
-
+  
+      const data = await res.json();
+      console.log("Backend Response:", data);
+  
       if (data.clarification) {
-        // Convert list format ["comentario: comentarioExp, comentarioDesc"]
-        // into an object { "comentario": ["comentarioExp", "comentarioDesc"] }
         const parsedClarifications = {};
         data.clarification.forEach(item => {
           const [category, options] = item.split(": ");
           parsedClarifications[category] = options.split(", ");
         });
-
+  
         setClarifications(parsedClarifications);
       } else if (typeof data.answer === "string") {
         setResponse(data.answer);
@@ -47,7 +49,7 @@ const CsvPage = () => {
         const formattedResponse = data.answer.map(obj =>
           Object.entries(obj).map(([key, value]) => `${key}: ${value}`).join(", ")
         ).join("\n");
-
+  
         setResponse(formattedResponse);
       } else {
         setResponse("Unexpected response format.");
@@ -102,7 +104,25 @@ const CsvPage = () => {
       </div>
 
       {error && <p className="error-message">{error}</p>}
-
+      {/* Sección única de chat con historial y respuesta */}
+      {(history.length > 0 || response) && (
+        <div className="chat-box">
+          {history.map((q, index) => (
+            <div key={index} className="chat-message user-message">
+              <strong>You:</strong> {q}
+            </div>
+          ))}
+          
+          {response && (
+            <div className="chat-message bot-message">
+              <strong>Bot:</strong> 
+              <p dangerouslySetInnerHTML={{ 
+                __html: response.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") 
+              }}></p>
+            </div>
+          )}
+        </div>
+      )}
       {/* Render clarification buttons if clarification options exist */}
       {Object.keys(clarifications).length > 0 && (
         <div className="clarification-container">
@@ -131,26 +151,18 @@ const CsvPage = () => {
               Send Selected Options
             </button>
       )}
-
-    {response && (
-    <div className="response">
-        <h2>Response</h2>
-        {Array.isArray(response) ? (
-        response.map((item, index) => (
-            <div key={index} className="response-item">
-            {Object.entries(item)
-                .map(([key, value]) => `${key}: ${value}`)
-                .join(", ")} {/* ✅ Separa valores con comas en una sola línea */}
-            </div>
-        ))
-        ) : (
-        <p dangerouslySetInnerHTML={{ __html: response.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>") }}></p>
-        )}
-    </div>
-    )}
       <button className="load-csv-button" onClick={() => navigate("/load-csv")}>
         Load New CSV
       </button>
+      {/* Example Prompts Section */}
+        <div className="example-prompts">
+        <h3>Example Prompts:</h3>
+        <ul>
+            <li> ¿Cuántas descargas se han hecho el día xx/xx/xxxx?</li>
+            <li> ¿Cuántas descargas se han hecho en el mes de xxxxxx?</li>
+            <li> ¿Qué año se hicieron más descargas?</li>
+        </ul>
+        </div>
     </div>
   );
 };
