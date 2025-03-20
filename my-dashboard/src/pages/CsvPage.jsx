@@ -10,8 +10,10 @@ const CsvPage = () => {
   const [selectedOptions, setSelectedOptions] = useState({}); // Store user selections
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [history, setHistory] = useState([]); // Guarda el historial de preguntas
-
+  const [history, setHistory] = useState(() => {
+    const savedHistory = sessionStorage.getItem("chatHistory");
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
   const handleSearch = async (question) => {
     if (!question.trim()) return;
   
@@ -55,8 +57,11 @@ const CsvPage = () => {
         botResponse = "Unexpected response format.";
         setResponse(botResponse);
       }
-      setHistory(prevHistory => [...prevHistory, { question, answer: botResponse }]);
-  
+      setHistory(prevHistory => {
+        const updatedHistory = [...prevHistory, { question, answer: botResponse }];
+        sessionStorage.setItem("chatHistory", JSON.stringify(updatedHistory)); // ✅ Guardar en sessionStorage
+        return updatedHistory;
+      });
     } catch (err) {
       setError("Error fetching response. Please try again.");
     } finally {
@@ -165,6 +170,12 @@ const CsvPage = () => {
             <li> ¿Qué año se hicieron más descargas?</li>
         </ul>
         </div>
+        <button className="clear-history-button" onClick={() => {
+          setHistory([]);
+          sessionStorage.removeItem("chatHistory");
+        }}>
+          Clear Chat
+        </button> 
     </div>
   );
 };
