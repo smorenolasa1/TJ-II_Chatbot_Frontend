@@ -79,6 +79,28 @@
     background-color: #e0a800;
 }
 
+/* General button styles for consistency */
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .clear-history-button {
+    background-color: #e27171; /* Red to indicate deletion */
+    color: white;
+    margin-top: 15px;
+  }
+  
+  .clear-history-button:hover {
+    background-color: #e60000; /* Darker red on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+  }
+
 /* Send Selected Options Button */
 .send-button {
     margin-top: 15px;
@@ -98,19 +120,15 @@
 
 /* Load CSV Button */
 .load-csv-button {
-    margin-top: 20px;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: 0.3s;
+background-color: #007bff; /* Blue gradient */
+color: white;
+box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+margin-top: 15px;
 }
 
 .load-csv-button:hover {
-    background-color: #0056b3;
+background: linear-gradient(to right, #0056b3, #003d80); /* Darker gradient */
+transform: translateY(-2px); /* Lifts button slightly */
 }
 
 .example-prompts {
