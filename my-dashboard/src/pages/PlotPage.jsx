@@ -41,7 +41,7 @@ const PlotPage = () => {
     let requestBody;
   
     if (selectedTool === "TJ-II data display") {
-      apiUrl = "http://localhost:5001/get_tjii_plot";
+      apiUrl = "http://localhost:5003/get_tjii_plot";
       requestBody = { user_query: userInput };
   
       console.log("📡 Sending Request to TJ-II Backend:", apiUrl, requestBody);
@@ -77,7 +77,7 @@ const PlotPage = () => {
       return; 
     }
   
-    const apiUrlExtract = "http://localhost:5000/extract_shot_number";
+    const apiUrlExtract = "http://localhost:5004/extract_shot_number";
     const requestBodyExtract = { user_query: userInput };
   
     console.log("📡 Sending Request to Extract Shot Number:", apiUrlExtract, requestBodyExtract);
@@ -103,7 +103,7 @@ const PlotPage = () => {
   
       console.log(`📡 Extracted shot number: ${extractedShotNumber}`);
   
-      apiUrl = "http://localhost:5000/ask_gemini";
+      apiUrl = "http://localhost:5004/ask_gemini";
       requestBody = { shot_number: extractedShotNumber, question: userInput };
   
       console.log("📡 Sending Request to SimilPatternTool Backend:", apiUrl, requestBody);

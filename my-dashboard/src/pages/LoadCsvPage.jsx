@@ -57,7 +57,7 @@ const LoadCsvPage = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:8501/upload", {
+      const res = await fetch("http://localhost:5001/upload", {
         method: "POST",
         body: formData,
       });
@@ -105,7 +105,7 @@ const LoadCsvPage = () => {
     setError("");
   
     try {
-      const res = await fetch("http://localhost:8501/ask", {
+      const res = await fetch("http://localhost:5001/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, start_row: startRow, end_row: endRow }),
