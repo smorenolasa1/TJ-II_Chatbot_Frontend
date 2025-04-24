@@ -94,8 +94,7 @@ const PlotPage = () => {
       const extractData = await responseExtract.json();
       const extractedShotNumber = extractData.shot_number;
       const extractedDatabaseName = extractData.database_name; // ✅ Extracting database_name
-      const extractedTIni = extractData.tIni;
-      const extractedTFin = extractData.tFin;
+  
       if (!extractedShotNumber || !extractedDatabaseName) { // ✅ Check for both values
         setError("Could not determine the shot number or database name. Please specify them.");
         setLoading(false);
@@ -109,9 +108,7 @@ const PlotPage = () => {
       requestBody = { 
         shot_number: extractedShotNumber, 
         question: userInput,
-        database_name: extractedDatabaseName, // ✅ Include database_name in the request
-        tIni: extractedTIni,
-        tFin: extractedTFin
+        database_name: extractedDatabaseName // ✅ Include database_name in the request
       };
   
       console.log("📡 Sending Request to SimilPatternTool Backend:", apiUrl, requestBody);
@@ -265,8 +262,9 @@ const PlotPage = () => {
       <div className="example-prompts">
         <h3>Example Prompts:</h3>
         <ul>
-            <li> - Give me the 4 most similar signals for discharge X in densidad</li>
-            <li> - What is the most similar signal to discharge 56968 in halfac</li>
+            <li> ¿Cuántas descargas se han hecho el día xx/xx/xxxx?</li>
+            <li> ¿Cuántas descargas se han hecho en el mes de xxxxxx?</li>
+            <li> ¿Qué año se hicieron más descargas?</li>
         </ul>
         </div>
     </div>
