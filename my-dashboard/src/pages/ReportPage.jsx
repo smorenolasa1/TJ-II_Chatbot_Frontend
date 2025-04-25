@@ -8,33 +8,29 @@ const ReportPage = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [wordUrl, setWordUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [log, setLog] = useState("");
 
   const handleGenerateReport = async () => {
     setLoading(true);
     setReportReady(false);
+    setLog("Generating report...");
+
     try {
       const response = await fetch("http://localhost:5005/generate_report");
-      console.log("📡 Raw response:", response);
-  
-      if (!response.ok) {
-        console.error("❌ Backend returned error:", response.status);
-        throw new Error("Failed to generate report");
-      }
-  
+      if (!response.ok) throw new Error("Failed to generate report");
+
       const data = await response.json();
-      console.log("✅ Backend returned data:", data);
-  
       if (data.pdf_url || data.word_url) {
         setPdfUrl(data.pdf_url);
         setWordUrl(data.word_url);
         setReportReady(true);
+        setLog("Report generated successfully.");
       } else {
-        alert("⚠️ Report generated but no URLs returned.");
+        setLog("Report generated but no files found.");
       }
-  
     } catch (error) {
-      console.error("❌ Error in handleGenerateReport:", error);
-      alert("Failed to generate report. Please try again.");
+      console.error(error);
+      setLog("An error occurred while generating the report.");
     } finally {
       setLoading(false);
     }
@@ -45,51 +41,81 @@ const ReportPage = () => {
       const res = await fetch("http://localhost:5005/reset_context", {
         method: "POST",
       });
+
       if (res.ok) {
-        alert("✅ Context reset successfully!");
         setReportReady(false);
         setPdfUrl(null);
         setWordUrl(null);
+        setLog("Context reset successfully.");
       } else {
-        alert("❌ Error resetting context.");
+        setLog("Error resetting context.");
       }
     } catch (error) {
-      console.error("❌ Error resetting context:", error);
+      console.error(error);
+      setLog("An error occurred while resetting the context.");
     }
   };
 
   return (
     <div className="report-page">
-      <button className="back-button" onClick={() => navigate("/")}>
-        ⬅ Back
-      </button>
+      <div className="header">
+        <button className="back-button" onClick={() => navigate("/")}>
+          Back to Home
+        </button>
+        <h1>Fusion Report Generator</h1>
+        <p className="description">
+          Generates a detailed report based on your previous analysis sessions.
+        </p>
+      </div>
 
-      <h1>📄 Report Generator</h1>
-      <p>Generate and download a complete fusion data analysis report.</p>
+      <div className="actions">
+        <button
+          className="primary-button"
+          onClick={handleGenerateReport}
+          disabled={loading}
+        >
+          {loading ? "Generating..." : "Generate Report"}
+        </button>
+        <button
+          className="secondary-button"
+          onClick={handleRestartContext}
+          disabled={loading}
+        >
+          Reset Context
+        </button>
+      </div>
 
-      <button className="generate-button" onClick={handleGenerateReport} disabled={loading}>
-        {loading ? "Generating..." : "Generate Report"}
-      </button>
+      {log && <div className="log">{log}</div>}
 
       {reportReady && (
-        <div className="download-section">
-          <h3>📂 Download your report:</h3>
-          {pdfUrl && (
-            <a href={pdfUrl} download className="download-link" target="_blank" rel="noopener noreferrer">
-              📥 Download PDF
-            </a>
-          )}
-          {wordUrl && (
-            <a href={wordUrl} download className="download-link" target="_blank" rel="noopener noreferrer">
-              📝 Download Word
-            </a>
-          )}
+        <div className="downloads">
+          <h2>Download Report</h2>
+          <div className="download-links">
+            {pdfUrl && (
+              <a
+                href={pdfUrl}
+                download
+                className="download-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download PDF
+              </a>
+            )}
+            {wordUrl && (
+              <a
+                href={wordUrl}
+                download
+                className="download-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download Word Document
+              </a>
+            )}
+          </div>
         </div>
       )}
-
-      <button className="restart-button" onClick={handleRestartContext}>
-        🔁 Restart Context
-      </button>
     </div>
   );
 };
