@@ -101,6 +101,18 @@ Each `Page` component corresponds to a specific core functionality of the applic
 
 ---
 
+### Application Initialization
+
+- **App.jsx**:  
+  Defines the main navigation structure of the app using **React Router**.  
+  It maps each URL path (e.g., `/csv`, `/plot`, `/report`) to its corresponding page component.
+
+- **main.jsx**:  
+  Main entry point of the React application.  
+  It initializes the app inside the HTML `<div id="root"></div>`, wraps it with `BrowserRouter` for routing support, and applies global styles from `index.css`.
+
+---
+
 ## Frontend ↔ Backend API Connections
 
 Each frontend page communicates with a specific backend service:
@@ -114,6 +126,8 @@ Each frontend page communicates with a specific backend service:
 | Report Generation          | ReportPage.jsx     | `http://localhost:5005/generate_report` and `http://localhost:5005/reset_context` |
 
 All endpoints are accessed via `fetch` calls with `mode: "cors"` enabled to allow frontend-backend communication.
+
+---
 
 ## Key Configuration Files
 
@@ -133,6 +147,8 @@ All endpoints are accessed via `fetch` calls with `mode: "cors"` enabled to allo
 - **package-lock.json**:  
   Automatically generated file that locks dependency versions to ensure consistent installations across different environments.
 
+--- 
+
 ## Important Notes
 
 - The backend microservices must be running locally for the frontend to work properly.
@@ -140,7 +156,6 @@ All endpoints are accessed via `fetch` calls with `mode: "cors"` enabled to allo
 - Make sure ports `5001` to `5005` are free and available, or adjust the endpoints if necessary.
 - `sessionStorage` is used to preserve user query history during the session.
 
----
 
 ## Dependencies
 
@@ -149,9 +164,6 @@ All endpoints are accessed via `fetch` calls with `mode: "cors"` enabled to allo
 - **ESLint** (Code linting and style checking)
 - **React Router** (Navigation between pages)
 
-## Notes
-
-- **CORS** (Cross-Origin Resource Sharing) is enabled both in the frontend and backend to allow smooth API calls.
 
 ## Additional Features
 
