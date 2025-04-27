@@ -95,7 +95,7 @@ Each `Page` component corresponds to a specific core functionality of the applic
 
 ---
 
-## 📽️ Demo Videos
+## Demo Videos
 
 You can find demo videos showcasing the main functionalities of the application [here](./my-dashboard/README.md).
 
