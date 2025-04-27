@@ -102,7 +102,7 @@ You can find demo videos showcasing the main functionalities of the application 
 Each demo corresponds to a different page:
 - CSV Querying
 - CSV Upload
-- Signal Plotting and AI Assistant
+- Signal Plotting
 - Report Generation
 
 ---
