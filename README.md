@@ -95,6 +95,18 @@ Each `Page` component corresponds to a specific core functionality of the applic
 
 ---
 
+## 📽️ Demo Videos
+
+You can find demo videos showcasing the main functionalities of the application [here](./my-dashboard/README.md).
+
+Each demo corresponds to a different page:
+- CSV Querying
+- CSV Upload
+- Signal Plotting and AI Assistant
+- Report Generation
+
+---
+
 **Components**:
 - **Button.jsx**: Custom button component.
 - **Card.jsx**: Reusable card component for displaying content.
