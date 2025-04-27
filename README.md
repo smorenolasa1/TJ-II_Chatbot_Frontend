@@ -81,7 +81,7 @@ Each `Page` component corresponds to a specific core functionality of the applic
 ### 3. Signal Plotting and AI Assistant (`PlotPage.jsx`)
 
 - Offers two modes:
-  - **SimilPatternTool**: Finds signals similar to a selected plasma discharge and generates a comparison plot.
+  - **SimilPatternTool**: Finds signals similar to a selected plasma discharge or to a specific pattern interval, and generates a comparison plot.
   - **TJ-II Data Display**: Displays specific plasma signals from the TJ-II database.
 - Sends user queries to different backend microservices depending on the selected mode.
 
